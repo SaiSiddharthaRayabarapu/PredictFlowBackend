@@ -1,0 +1,11 @@
+flask
+flask-cors
+osmnx
+folium
+pandas
+joblib
+networkx
+shapely
+geopandas
+numpy
+scikit-learn
