@@ -1,11 +1,13 @@
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 import subprocess
 import os
 import json
 
 app = Flask(__name__)
-CORS(app)
+
+# ✅ Allow frontend access
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -75,12 +77,11 @@ def run_simulation():
                 output = json.load(f)
                 vehicle_count = output.get("total_vehicles_per_hour", 0)
 
-        # ✅ NO CLAMP — REAL VALUES
         vehicle_count = int(vehicle_count)
 
         return jsonify({
             "status": "success",
-            "map_url": "https://predictflowbackend.onrender.com/map",   # ✅ IMPORTANT FOR DEPLOYMENT
+            "map_url": "https://predictflowbackend.onrender.com/map",
             "vehicle_count": vehicle_count,
             "visitors_per_hour": visitors
         })
@@ -96,7 +97,7 @@ def run_simulation():
 
 
 # =============================
-# SERVE MAP
+# SERVE MAP (IFRAME SAFE)
 # =============================
 @app.route("/map")
 def serve_map():
@@ -106,7 +107,15 @@ def serve_map():
     if not os.path.exists(map_path):
         return "Map not generated yet"
 
-    return send_file(map_path)
+    with open(map_path, "r", encoding="utf-8") as f:
+        html = f.read()
+
+    response = Response(html, mimetype="text/html")
+
+    # ✅ allow iframe
+    response.headers["X-Frame-Options"] = "ALLOWALL"
+
+    return response
 
 
 # =============================
