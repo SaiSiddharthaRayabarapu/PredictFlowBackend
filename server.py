@@ -80,7 +80,7 @@ def run_simulation():
 
         return jsonify({
             "status": "success",
-            "map_url": "/map",   # ✅ IMPORTANT FOR DEPLOYMENT
+            "map_url": "https://predictflowbackend.onrender.com/map",   # ✅ IMPORTANT FOR DEPLOYMENT
             "vehicle_count": vehicle_count,
             "visitors_per_hour": visitors
         })
